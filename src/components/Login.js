@@ -132,6 +132,7 @@ const Hero = styled.div`
 const Form = styled.div`
   margin-top: 100px;
   width: 408px;
+  z-index: 1;
   @media (max-width: 768px) {
     margin-top: 20px;
   }
