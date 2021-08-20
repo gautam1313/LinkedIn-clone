@@ -1,50 +1,122 @@
-import React, { useState } from "react";
+import React, { useState, Fragment } from "react";
 import styled from "styled-components";
+import ReactPlayer from "react-player";
 
 const PostModal = (props) => {
   const [editorText, setEditorText] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
+
+  const [vidORimg, setvidORimg] = useState("");
+
+  const switchVidOrImgHandler = (option) => {
+    setImageUrl("");
+    setVideoUrl("");
+    setvidORimg(option);
+  };
+
+  const imageUrlHandler = (event) => {
+    event.preventDefault();
+    if (event.target.files[0] === "" || event.target.files[0] === undefined) {
+      return;
+    }
+    setImageUrl(event.target.files[0]);
+  };
+
+  const reset = (event) => {
+    event.preventDefault();
+    setEditorText("");
+    setImageUrl("");
+    setVideoUrl("");
+    setvidORimg("");
+    props.modalHandler(event);
+  };
   return (
-    <Container>
-      <Content>
-        <Header>
-          <h2>Create Post</h2>
-          <button>
-            <img src="/images/close-icon.svg" alt="" />
-          </button>
-        </Header>
-        <SharedContent>
-          <UserInfo>
-            <img src="/images/user.svg" alt="" />
-            <span>Name</span>
-          </UserInfo>
-          <Editor>
-            <textarea
-              value={editorText}
-              placeholder="What do you want to talk about?"
-              onChange={(event) => setEditorText(event.target.value)}
-              autoFocus={true}
-            ></textarea>
-          </Editor>
-        </SharedContent>
-        <ShareCreation>
-          <AttachAssets>
-            <AssetButton>
-              <img src="/images/shareImage-icon.svg" alt="" />
-            </AssetButton>
-            <AssetButton>
-              <img src="/images/shareVideo-icon.svg" alt="" />
-            </AssetButton>
-          </AttachAssets>
-          <ShareComment>
-            <AssetButton>
-              <img src="/images/privacyComment-icon.svg" alt="" />
-              Anyone
-            </AssetButton>
-          </ShareComment>
-          <PostButton>Post</PostButton>
-        </ShareCreation>
-      </Content>
-    </Container>
+    <Fragment>
+      {props.showModal && (
+        <Container>
+          <Content>
+            <Header>
+              <h2>Create Post</h2>
+              <button onClick={reset}>
+                <img src="/images/close-icon.svg" alt="" />
+              </button>
+            </Header>
+            <SharedContent>
+              <UserInfo>
+                <img src="/images/user.svg" alt="" />
+                <span>Name</span>
+              </UserInfo>
+              <Editor>
+                <textarea
+                  value={editorText}
+                  placeholder="What do you want to talk about?"
+                  onChange={(event) => setEditorText(event.target.value)}
+                  autoFocus={true}
+                />
+                {vidORimg === "image" ? (
+                  <Uploads>
+                    <input
+                      type="file"
+                      id="file"
+                      accept="image/jpeg, image/jpg, image/png, image/gif"
+                      name="image"
+                      onChange={imageUrlHandler}
+                      style={{ display: "none" }}
+                    />
+                    <p>
+                      <label
+                        htmlFor="file"
+                        style={{
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        }}
+                      >
+                        Select Image
+                      </label>
+                    </p>
+                    {imageUrl && <img src={URL.createObjectURL(imageUrl)} />}
+                  </Uploads>
+                ) : (
+                  vidORimg === "media" && (
+                    <Fragment>
+                      <input
+                        type="text"
+                        placeholder="Select Video URL"
+                        value={videoUrl}
+                        onChange={(event) => setVideoUrl(event.target.value)}
+                      />
+                      {videoUrl && (
+                        <ReactPlayer width={"100%"} url={videoUrl} />
+                      )}
+                    </Fragment>
+                  )
+                )}
+              </Editor>
+            </SharedContent>
+            <ShareCreation>
+              <AttachAssets>
+                <AssetButton onClick={() => setvidORimg("image")}>
+                  <img src="/images/shareImage-icon.svg" alt="" />
+                </AssetButton>
+                <AssetButton onClick={() => setvidORimg("media")}>
+                  <img src="/images/shareVideo-icon.svg" alt="" />
+                </AssetButton>
+              </AttachAssets>
+              <ShareComment>
+                <AssetButton>
+                  <img src="/images/privacyComment-icon.svg" alt="" />
+                  Anyone
+                </AssetButton>
+              </ShareComment>
+              <PostButton disabled={!editorText ? true : false}>
+                Post
+              </PostButton>
+            </ShareCreation>
+          </Content>
+        </Container>
+      )}
+    </Fragment>
   );
 };
 
@@ -57,6 +129,7 @@ const Container = styled.div`
   z-index: 9999;
   background-color: rgba(0, 0, 0, 0.8);
   color: black;
+  animation: fadeIn 0.3s ease-in;
 `;
 
 const Content = styled.div`
@@ -162,10 +235,12 @@ const PostButton = styled.button`
   padding-left: 16px;
   padding-right: 16px;
   border-radius: 20px;
-  color: white;
-  background: #0a66c2;
+  color: ${(props) => (props.disabled ? "rgba(0, 0, 0, 0.5)" : "white")};
+  background: ${(props) =>
+    props.disabled ? "rgba(0, 0, 0, 0.09)" : "#0a66c2"};
   &:hover {
-    background: #004182;
+    background: ${(props) =>
+      props.disabled ? "rgba(0, 0, 0, 0.02)" : "#004182"};
   }
 `;
 
@@ -180,6 +255,13 @@ const Editor = styled.div`
     width: 100%;
     height: 35px;
     margin-bottom: 20px;
+  }
+`;
+
+const Uploads = styled.div`
+  text-align: center;
+  img {
+    width: 100%;
   }
 `;
 
