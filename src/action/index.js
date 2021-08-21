@@ -1,4 +1,4 @@
-import { auth, provider } from "../firebase";
+import db, { auth, provider, storage } from "../firebase";
 import { SET_USER } from "./actionType";
 
 const setUser = (payload) => ({
@@ -35,5 +35,55 @@ export const signOutAPI = () => {
       .signOut()
       .then(() => dispatch(setUser(null)))
       .catch((error) => console.log(error.message));
+  };
+};
+
+export const postArticleAPI = (payload) => {
+  return (dispatch) => {
+    if (payload.image !== "") {
+      const upload = storage
+        .ref(`images/${payload.image.name}`)
+        .put(payload.image);
+      upload.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(progress, " % done");
+          if (snapshot.state === "RUNNING") {
+            console.log(progress, " % done1");
+          }
+        },
+        (error) => console.log(error.code),
+        async () => {
+          const downloadURL = await upload.snapshot.ref.getDownloadURL();
+          db.collection("post").add({
+            userDetail: {
+              userEmail: payload.user.email,
+              userName: payload.user.displayName,
+              uploadDate: payload.timestamp,
+              userImage: payload.user.photoURL,
+            },
+            videoURL: payload.videoURL,
+            postedImage: downloadURL,
+            comments: 0,
+            description: payload.description,
+          });
+        }
+      );
+    } else if (payload.videoURL !== "") {
+      db.collection("post").add({
+        userDetail: {
+          userEmail: payload.user.email,
+          userName: payload.user.displayName,
+          uploadDate: payload.timestamp,
+          userImage: payload.user.photoURL,
+        },
+        videoURL: payload.videoURL,
+        postedImage: "",
+        comments: 0,
+        description: payload.description,
+      });
+    }
   };
 };

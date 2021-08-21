@@ -1,6 +1,9 @@
 import React, { useState, Fragment } from "react";
 import styled from "styled-components";
 import ReactPlayer from "react-player";
+import { connect } from "react-redux";
+import firebase from "firebase";
+import { postArticleAPI } from "../action";
 
 const PostModal = (props) => {
   const [editorText, setEditorText] = useState("");
@@ -13,6 +16,22 @@ const PostModal = (props) => {
     setImageUrl("");
     setVideoUrl("");
     setvidORimg(option);
+  };
+
+  const postArticle = (event) => {
+    event.preventDefault();
+    if (event.target !== event.currentTarget) {
+      return;
+    }
+    const payload = {
+      image: imageUrl,
+      user: props.user,
+      timestamp: new firebase.firestore.Timestamp.now(),
+      videoURL: videoUrl,
+      description: editorText,
+    };
+    props.postArticle(payload);
+    reset(event);
   };
 
   const imageUrlHandler = (event) => {
@@ -44,8 +63,14 @@ const PostModal = (props) => {
             </Header>
             <SharedContent>
               <UserInfo>
-                <img src="/images/user.svg" alt="" />
-                <span>Name</span>
+                {props.user.photoURL ? (
+                  <img src={props.user.photoURL} alt="" />
+                ) : (
+                  <img src="/images/user.svg" alt="" />
+                )}
+                <span>
+                  {props.user.displayName ? props.user.displayName : "Name"}
+                </span>
               </UserInfo>
               <Editor>
                 <textarea
@@ -96,10 +121,10 @@ const PostModal = (props) => {
             </SharedContent>
             <ShareCreation>
               <AttachAssets>
-                <AssetButton onClick={() => setvidORimg("image")}>
+                <AssetButton onClick={() => switchVidOrImgHandler("image")}>
                   <img src="/images/shareImage-icon.svg" alt="" />
                 </AssetButton>
-                <AssetButton onClick={() => setvidORimg("media")}>
+                <AssetButton onClick={() => switchVidOrImgHandler("media")}>
                   <img src="/images/shareVideo-icon.svg" alt="" />
                 </AssetButton>
               </AttachAssets>
@@ -109,7 +134,10 @@ const PostModal = (props) => {
                   Anyone
                 </AssetButton>
               </ShareComment>
-              <PostButton disabled={!editorText ? true : false}>
+              <PostButton
+                disabled={!editorText ? true : false}
+                onClick={(event) => postArticle(event)}
+              >
                 Post
               </PostButton>
             </ShareCreation>
@@ -265,4 +293,14 @@ const Uploads = styled.div`
   }
 `;
 
-export default PostModal;
+const mapStateToProps = (state) => {
+  return {
+    user: state.useState.user,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  postArticle: (payload) => dispatch(postArticleAPI(payload)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PostModal);
