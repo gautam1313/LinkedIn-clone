@@ -270,6 +270,8 @@ const SocialCounts = styled.ul`
     font-size: 12px;
     button {
       display: flex;
+      border: none;
+      background: transparent;
     }
   }
 `;
@@ -287,7 +289,8 @@ const SocialActions = styled.div`
     display: inline-flex;
     align-items: center;
     padding: 8px;
-
+    border: none;
+    background: transparent;
     @media (min-width: 768px) {
       span {
         margin-left: 8px;
