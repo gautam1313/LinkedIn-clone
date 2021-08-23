@@ -1,6 +1,7 @@
-import { SET_LOADER } from "../action/actionType";
+import { SET_LOADER, GET_ARTICLES } from "../action/actionType";
 const initState = {
   loading: false,
+  articles: [],
 };
 
 const articleReducer = (state = initState, action) => {
@@ -9,6 +10,11 @@ const articleReducer = (state = initState, action) => {
       return {
         ...state,
         loading: action.loading,
+      };
+    case GET_ARTICLES:
+      return {
+        ...state,
+        articles: action.articles,
       };
     default:
       return state;

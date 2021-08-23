@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PostModal from "./PostModal";
 import { connect } from "react-redux";
+import { gertArticlesAPI } from "../action";
 
 const Main = (props) => {
   const [showModal, setShowModal] = useState(false);
@@ -21,6 +22,9 @@ const Main = (props) => {
         setShowModal(false);
     }
   };
+  useEffect(() => {
+    props.getArticle();
+  }, []);
   return (
     <Container>
       <ShareBox>
@@ -320,6 +324,8 @@ const mapStateToProps = (state) => {
   };
 };
 
-const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => ({
+  getArticle: () => dispatch(gertArticlesAPI()),
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Main);
