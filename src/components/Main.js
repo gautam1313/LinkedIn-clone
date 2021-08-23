@@ -30,7 +30,12 @@ const Main = (props) => {
           ) : (
             <img src="/images/user.svg" alt="" />
           )}
-          <button onClick={modalHandler}>Start a post</button>
+          <button
+            onClick={modalHandler}
+            disabled={props.loading ? true : false}
+          >
+            Start a post
+          </button>
         </div>
         <div>
           <button>
@@ -51,7 +56,8 @@ const Main = (props) => {
           </button>
         </div>
       </ShareBox>
-      <div>
+      <LoaderContent>
+        {props.loading && <img src="/images/spin-loading.gif" />}
         <Article>
           <SharedActor>
             <a>
@@ -109,7 +115,7 @@ const Main = (props) => {
             </button>
           </SocialActions>
         </Article>
-      </div>
+      </LoaderContent>
       <PostModal showModal={showModal} modalHandler={modalHandler} />
     </Container>
   );
@@ -299,10 +305,21 @@ const SocialActions = styled.div`
   }
 `;
 
+const LoaderContent = styled.div`
+  text-align: center;
+  z-index: 9999;
+  & > img {
+    width: 30px;
+  }
+`;
+
 const mapStateToProps = (state) => {
   return {
     user: state.useState.user,
+    loading: state.articleState.loading,
   };
 };
 
-export default connect(mapStateToProps)(Main);
+const mapDispatchToProps = (dispatch) => ({});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

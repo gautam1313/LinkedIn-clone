@@ -1,9 +1,14 @@
 import db, { auth, provider, storage } from "../firebase";
-import { SET_USER } from "./actionType";
+import { SET_USER, SET_LOADER } from "./actionType";
 
 const setUser = (payload) => ({
   type: SET_USER,
   user: payload,
+});
+
+const setLoader = (payload) => ({
+  type: SET_LOADER,
+  loading: payload,
 });
 
 export const signInAPI = () => {
@@ -41,6 +46,7 @@ export const signOutAPI = () => {
 export const postArticleAPI = (payload) => {
   return (dispatch) => {
     if (payload.image !== "") {
+      dispatch(setLoader(true));
       const upload = storage
         .ref(`images/${payload.image.name}`)
         .put(payload.image);
@@ -69,9 +75,11 @@ export const postArticleAPI = (payload) => {
             comments: 0,
             description: payload.description,
           });
+          dispatch(setLoader(false));
         }
       );
     } else if (payload.videoURL !== "") {
+      dispatch(setLoader(true));
       db.collection("post").add({
         userDetail: {
           userEmail: payload.user.email,
@@ -84,6 +92,7 @@ export const postArticleAPI = (payload) => {
         comments: 0,
         description: payload.description,
       });
+      dispatch(setLoader(false));
     }
   };
 };
