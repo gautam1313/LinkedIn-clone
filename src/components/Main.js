@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import PostModal from "./PostModal";
 import { connect } from "react-redux";
 import { gertArticlesAPI } from "../action";
@@ -60,66 +60,72 @@ const Main = (props) => {
           </button>
         </div>
       </ShareBox>
-      <LoaderContent>
-        {props.loading && <img src="/images/spin-loading.gif" />}
-        <Article>
-          <SharedActor>
-            <a>
-              <img src="/images/user.svg" />
-              <div>
-                <span>Title</span>
-                <span>Mail</span>
-                <span>Date</span>
-              </div>
-            </a>
-            <button>
-              <img src="/images/element.svg" alt="" />
-            </button>
-          </SharedActor>
-          <Description>Description!</Description>
-          <SharedImg>
-            <a>
-              <img src="/images/scuderia-ferrari.jpeg" alt="" />
-            </a>
-          </SharedImg>
-          <SocialCounts>
-            <li>
-              <button>
-                <img
-                  src="https://static-exp1.licdn.com/sc/h/d310t2g24pvdy4pt1jkedo4yb"
-                  alt=""
-                />
-                <img
-                  src="https://static-exp1.licdn.com/sc/h/5thsbmikm6a8uov24ygwd914f"
-                  alt=""
-                />
-                <span>175</span>
-              </button>
-            </li>
-            <li>
-              <a>33 comments</a>
-            </li>
-          </SocialCounts>
-          <SocialActions>
-            <button>
-              <img src="/images/like-icon.svg" alt="" />
-              <span>Like</span>
-            </button>
-            <button>
-              <img src="/images/comments-icon.svg" alt="" />
-              <span>Comments</span>
-            </button>
-            <button>
-              <img src="/images/share-icon.svg" alt="" />
-              <span>Share</span>
-            </button>
-            <button>
-              <img src="/images/send-icon.svg" alt="" />
-              <span>Send</span>
-            </button>
-          </SocialActions>
-        </Article>
-      </LoaderContent>
+      <Fragment>
+        {props.articles.length === 0 ? (
+          <p>No posts</p>
+        ) : (
+          <LoaderContent>
+            {props.loading && <img src="/images/spin-loading.gif" />}
+            <Article>
+              <SharedActor>
+                <a>
+                  <img src="/images/user.svg" />
+                  <div>
+                    <span>Title</span>
+                    <span>Mail</span>
+                    <span>Date</span>
+                  </div>
+                </a>
+                <button>
+                  <img src="/images/element.svg" alt="" />
+                </button>
+              </SharedActor>
+              <Description>Description!</Description>
+              <SharedImg>
+                <a>
+                  <img src="/images/scuderia-ferrari.jpeg" alt="" />
+                </a>
+              </SharedImg>
+              <SocialCounts>
+                <li>
+                  <button>
+                    <img
+                      src="https://static-exp1.licdn.com/sc/h/d310t2g24pvdy4pt1jkedo4yb"
+                      alt=""
+                    />
+                    <img
+                      src="https://static-exp1.licdn.com/sc/h/5thsbmikm6a8uov24ygwd914f"
+                      alt=""
+                    />
+                    <span>175</span>
+                  </button>
+                </li>
+                <li>
+                  <a>33 comments</a>
+                </li>
+              </SocialCounts>
+              <SocialActions>
+                <button>
+                  <img src="/images/like-icon.svg" alt="" />
+                  <span>Like</span>
+                </button>
+                <button>
+                  <img src="/images/comments-icon.svg" alt="" />
+                  <span>Comments</span>
+                </button>
+                <button>
+                  <img src="/images/share-icon.svg" alt="" />
+                  <span>Share</span>
+                </button>
+                <button>
+                  <img src="/images/send-icon.svg" alt="" />
+                  <span>Send</span>
+                </button>
+              </SocialActions>
+            </Article>
+          </LoaderContent>
+        )}
+      </Fragment>
       <PostModal showModal={showModal} modalHandler={modalHandler} />
     </Container>
   );
@@ -321,6 +327,7 @@ const mapStateToProps = (state) => {
   return {
     user: state.useState.user,
     loading: state.articleState.loading,
+    articles: state.articleState.articles,
   };
 };
 
